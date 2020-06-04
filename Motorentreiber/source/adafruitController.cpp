@@ -54,6 +54,7 @@ bool AdafruitController::motorsAvailable(void)
     }
 }
 
+// ausführen des eigendlichen kommandos für das bewegen der motoren
 void AdafruitController::drive(ControllerCommand command)
 {
     if(motorsAvailable())

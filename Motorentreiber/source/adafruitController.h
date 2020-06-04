@@ -7,6 +7,10 @@
 
 using namespace std::chrono_literals;
 
+/*
+* Wrapper Klasse die den MotorHat steuert und indirekt die motoren verwaltet
+*/
+
 class AdafruitController
 {
 public:

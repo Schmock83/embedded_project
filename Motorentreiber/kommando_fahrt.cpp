@@ -24,6 +24,7 @@ void signalHandler(int signum)
     exit(signum);
 }
 
+// returned den entsprechenden AdafruitController::ControllerCommand fuer das Argument
 AdafruitController::ControllerCommand getCommandForString(const char *command)
 {
     //std::cout << "getCommandForString(" << command << "): ";
@@ -54,6 +55,7 @@ AdafruitController::ControllerCommand getCommandForString(const char *command)
     }   
 }
 
+// verarbeitet die argumente
 std::vector<std::pair<AdafruitController::ControllerCommand, double>> parseArguments(int argc, char *argv[])
 {
     std::vector<std::pair<AdafruitController::ControllerCommand, double>> commands;
@@ -81,6 +83,7 @@ std::vector<std::pair<AdafruitController::ControllerCommand, double>> parseArgum
     return commands;
 }
 
+// ausgabe des gerade ausgeführten kommandos
 void printCommand(AdafruitController::ControllerCommand cmd, int seconds, int milliseconds)
 {
     std::string commandString = "";
@@ -103,6 +106,7 @@ void printCommand(AdafruitController::ControllerCommand cmd, int seconds, int mi
     std::cout << "Driving \'" << commandString << "\' for " << seconds << " seconds and " << milliseconds << " milliseconds\n";
 }
 
+
 int main(int argc, char* argv[])
 {
     // Csignal für Abbruch über STRG-C
@@ -110,12 +114,13 @@ int main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        std::cerr << "Usage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << "Forward-1.5 Backward-2.3 ...\n";
+        std::cerr << "No Arguments given!\nUsage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << "Forward-1.5 Backward-2.3 ...\n";
+        return -1;
     }
 
-    auto commands = parseArguments(argc, argv);
+    auto commands = parseArguments(argc, argv); // kommandos in richtiges format zum späteren verarbeiten bringen
 
-    if(controller.motorsAvailable())
+    if(controller.motorsAvailable())    // motoren erreichbar?
     {
         controller.setSpeed();
 
@@ -123,11 +128,11 @@ int main(int argc, char* argv[])
         {
             //dauer in sekunden und millisekunden aufteilen
             double seconds = 0, milliseconds = 0;
-            milliseconds = modf(pair.second, &seconds) * 1000;
+            milliseconds = modf(pair.second, &seconds) * 1000; // sekundenangabe (z.B. '1.3') in sekunden und millisekunden aufteilen
 
             printCommand(pair.first, (int)seconds, (int)milliseconds);
 
-            controller.drive(pair.first);
+            controller.drive(pair.first);   //ausführen des eigendlichen kommandos
 
             std::this_thread::sleep_for(std::chrono::seconds((int)seconds));
             std::this_thread::sleep_for(std::chrono::milliseconds((int)milliseconds));
