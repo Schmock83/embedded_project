@@ -30,6 +30,8 @@ double distance_cm(void)
 
     double elapsed_ms = std::chrono::duration<double, std::milli>(stopTime - startTime).count();
 
+    // mit der Schallgeschwindigkeit (34.3 cm/ms) multiplizieren
+    // durch 2 teilen, da hin und rueck-weg
     return (elapsed_ms * 34.3) / 2;
 }
 

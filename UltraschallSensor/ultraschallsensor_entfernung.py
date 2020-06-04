@@ -1,3 +1,5 @@
+#Quelle: https://tutorials-raspberrypi.de/entfernung-messen-mit-ultraschallsensor-hc-sr04/
+
 #Bibliotheken einbinden
 import RPi.GPIO as GPIO
 import time
