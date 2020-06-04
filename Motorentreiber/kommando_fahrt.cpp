@@ -108,6 +108,11 @@ int main(int argc, char* argv[])
     // Csignal für Abbruch über STRG-C
     signal(SIGINT, signalHandler);
 
+    if(argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << "Forward-1.5 Backward-2.3 ...\n";
+    }
+
     auto commands = parseArguments(argc, argv);
 
     if(controller.motorsAvailable())
