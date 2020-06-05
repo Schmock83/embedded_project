@@ -13,6 +13,8 @@
 
 AdafruitController controller;
 
+typedef std::pair<AdafruitController::ControllerCommand, double>  command_time_pair;
+
 /// Interrupt Routine for STRG-C
 void signalHandler(int signum)
 {
@@ -56,9 +58,9 @@ AdafruitController::ControllerCommand getCommandForString(const char *command)
 }
 
 // verarbeitet die argumente
-std::vector<std::pair<AdafruitController::ControllerCommand, double>> parseArguments(int argc, char *argv[])
+std::vector<command_time_pair> parseArguments(int argc, char *argv[])
 {
-    std::vector<std::pair<AdafruitController::ControllerCommand, double>> commands;
+    std::vector<command_time_pair> commands;
     //commands.resize(argc-1);
 
     for (int i = 1; i < argc; i++)
@@ -71,12 +73,12 @@ std::vector<std::pair<AdafruitController::ControllerCommand, double>> parseArgum
         if((cmd = getCommandForString(command)) == AdafruitController::kInvalidCommand)
         {
             //stop programm
-            std::cout << "Kommando \'" << command << "\' wurde nicht erkannt\nProgramm wird abgebrochen\n";
+            std::cout << "Command \'" << command << "\' not known\nClosing Program...\n";
             signalHandler(-1);
         }
         else    
         {
-            commands.push_back(std::pair<AdafruitController::ControllerCommand, double>(getCommandForString(command), duration));
+            commands.push_back(command_time_pair(getCommandForString(command), duration));
         }
     }
 
@@ -114,7 +116,7 @@ int main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        std::cerr << "No Arguments given!\nUsage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << "Forward-1.5 Backward-2.3 ...\n";
+        std::cerr << "No Arguments given!\nUsage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << " Forward-1.5 Backward-2.3 ...\n";
         return -1;
     }
 
