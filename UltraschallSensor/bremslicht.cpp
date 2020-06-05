@@ -7,7 +7,7 @@
 #define GPIO_TRIGGER 1
 #define GPIO_ECHO 5
 #define BREMSLICHT 26
-#define MINIMAL_DISTANCE_CM 10
+#define MINIMAL_DISTANCE_CM 15
 
 double distance_cm(void)
 {
