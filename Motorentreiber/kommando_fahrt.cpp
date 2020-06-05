@@ -105,7 +105,7 @@ void printCommand(AdafruitController::ControllerCommand cmd, double seconds)
         break;
     }
 
-    std::cout << "Driving \'" << commandString << "\' for " << seconds * 1000 << " ms\n";
+    std::cout << "Driving \'" << commandString << "\' for " << seconds << " seconds\n";
 }
 
 int main(int argc, char* argv[])
