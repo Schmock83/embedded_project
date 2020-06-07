@@ -16,6 +16,8 @@
 #define MINIMAL_DISTANCE_CM 15
 #define INTERVALL_MS 50 // Intervall in dem geprueft werden soll ob hinderniss vor buggy
 
+#define BACKUP_INTERVALL 10 // wie viele cm buggy nach hinten fahren soll wenn rechts(45grad) und links(45grad) hindernisse sind
+
 #define LOG_OUTPUT 0 // togglen der hilfs-ausgaben
 
 
@@ -159,10 +161,45 @@ void printCommand(AdafruitController::ControllerCommand cmd, double seconds)
     std::cout << "Driving \'" << commandString << "\' for " << seconds << " seconds\n";
 }
 
+// ausweichen/umfahren des hindernisses
 void evadeObstacle(void)
 {
-    //TODO
-    std::cin.get();
+    unsigned int distanceToObstacle = MINIMAL_DISTANCE_CM; // distanz die buggy fahren muss bis es bei dem Hinderniss ist
+    
+    while(true)
+    {
+        // nach links drehen und schauen ob hinderniss im weg:
+        turnLeft(45);
+        // pruefen ob hinderniss im weg
+        checkFrontalDistance();
+        if(readyToDrive)
+        {
+            //TODO Fahren bis zum hinderniss, dass wieder 45Grad drehen u nd gleichen abstand fahren
+            controller.driveDistance(AdafruitController::kForward, distanceToObstacle);
+            turnRight(90);
+            controller.driveDistance(AdafruitController::kForward, distanceToObstacle);
+            turnLeft(45);
+            return;
+        }
+        // 90 = 45 (um wieder in der urspruenglichen fahrtrichtung zu sein - umkehrung von turnLeft) + 45 (um nach rechts zu drehen fuer 45 Grad)
+        turnRight(90);
+        // pruefen ob hinderniss im weg
+        checkFrontalDistance();
+        if(readyToDrive)
+        {
+            //TODO Fahren bis zum hinderniss, dass wieder 45Grad drehen u nd gleichen abstand fahren
+            controller.driveDistance(AdafruitController::kForward, distanceToObstacle);
+            turnLeft(90);
+            controller.driveDistance(AdafruitController::kForward, distanceToObstacle);
+            turnRight(45);
+            return;
+        }
+        // zurueck in urspruengliche fahrtrichtung
+        turnLeft(45);
+        // rueckwaerts fahren fuer bestimmte distanz - auf distanceToObstacle addieren
+        controller.driveDistance(AdafruitController::kBackward, BACKUP_INTERVALL);
+        distanceToObstacle += BACKUP_INTERVALL;
+    }
 }
 
 void driveThreadFunc(std::vector <command_time_pair> commands)
@@ -274,6 +311,7 @@ int main(int argc, char *argv[])
     {
         // geschwindigkeit einstellen -> default=100
         controller.setSpeed();
+
         std::thread driveThread(driveThreadFunc, commands);
 
         // solange thread (und damit die fahrt des buggies) noch nicht zu ende ist -> ueperprufen ob hinderniss im weg

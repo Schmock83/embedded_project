@@ -50,9 +50,11 @@ public:
      *  Expects a value between 0 and 255 inclusive.
      */
     void setSpeed (int speed);
+    const int getSpeed(void);
 
 private:
     void setPin (int pin, bool enabled);
+    int speed = -1;
 
     PWM& controller;
     int pwmPin = 0, in1Pin = 0, in2Pin = 0;

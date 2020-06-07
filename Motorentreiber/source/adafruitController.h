@@ -29,8 +29,12 @@ public:
     void setSpeed(int speed, int index);
     bool motorsAvailable(void);
     bool isValid(void);
-
+    void turnLeft(int degrees);
+    void turnRight(int degrees);
+    const int getSpeed(void);
+    const int getSpeed(int index);
     void drive(ControllerCommand command);
+    void driveDistance(AdafruitController::ControllerCommand cmd, double cm);
 
 private:
     AdafruitMotorHAT hat;

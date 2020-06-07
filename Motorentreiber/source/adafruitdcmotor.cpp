@@ -87,9 +87,15 @@ void AdafruitDCMotor::run (Command command)
     }
 }
 
+const int AdafruitDCMotor::getSpeed(void)
+{
+    return speed;
+}
+
 void AdafruitDCMotor::setSpeed (int speed)
 {
     speed = std::max (0, std::min (speed, 255));
+    this->speed = speed;
     controller.setChannel (pwmPin, 0, speed * 16);
     log::output("Speed: " + speed);
 }

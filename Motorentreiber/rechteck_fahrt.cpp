@@ -37,13 +37,13 @@ int main(void)
         std::this_thread::sleep_for(1s);
 
         controller.drive(AdafruitController::kRight);
-        std::this_thread::sleep_for(1.4s);
+        std::this_thread::sleep_for(0.65s);
 
         controller.drive(AdafruitController::kForward);
         std::this_thread::sleep_for(1s);
 
         controller.drive(AdafruitController::kRight);
-        std::this_thread::sleep_for(1.4s);
+        std::this_thread::sleep_for(0.65s);
 
         controller.drive(AdafruitController::kBrake);
 
@@ -51,13 +51,14 @@ int main(void)
         std::this_thread::sleep_for(1s);
 
         controller.drive(AdafruitController::kRight);
-        std::this_thread::sleep_for(1.4s);
+        std::this_thread::sleep_for(0.65s);
 
         controller.drive(AdafruitController::kForward);
         std::this_thread::sleep_for(1s);
 
         controller.drive(AdafruitController::kRight);
-        std::this_thread::sleep_for(1.4s);
+        std::this_thread::sleep_for(0.65s);
+        
     }
 
     return 0;
