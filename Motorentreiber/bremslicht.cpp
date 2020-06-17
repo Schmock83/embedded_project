@@ -51,13 +51,15 @@ double distance_cm(void) {
     double distance = (elapsed_ms * 34.3) / 2;
 
     if (distance <= MINIMAL_DISTANCE_CM) {
+        // bremslicht anschalten
         digitalWrite(BREMSLICHT, HIGH);
 
         // buggy anhalten
         controller.drive(AdafruitController::kBrake);
 
-        cout << "Buggy wurde angehalten.\n";
+        std::cout << "Buggy wurde angehalten.\n";
     } else {
+        // bremslicht ausschalten
         digitalWrite(BREMSLICHT, LOW);
     }
 
@@ -71,6 +73,7 @@ int main() {
     // Richtung der GPIO - Pins festlegen(IN / OUT)
     wiringPiSetup();
 
+    // wiringPi pin-modes festlegen
     pinMode(GPIO_TRIGGER, OUTPUT);
     pinMode(GPIO_ECHO, INPUT);
     pinMode(BREMSLICHT, OUTPUT);
