@@ -86,7 +86,7 @@ int main() {
 
         // schleife, die periodisch testet, ob Hinderniss vor Buggy ist
         double distance = -1;
-        while (true) {
+        do{
             // distance neu berechnen
             distance = distance_cm();
             std::cout << "Distance: " << std::fixed << std::setprecision(2)
@@ -94,7 +94,7 @@ int main() {
             // threat schlafen legen für INTERVALL ms
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(INTERVALL_MS));
-        }
+        }while(distance > MINIMAL_DISTANCE_CM);
     }
 
     return 0;
