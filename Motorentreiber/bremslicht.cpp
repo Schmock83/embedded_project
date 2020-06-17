@@ -80,16 +80,16 @@ int main() {
 
         // geradeaus fahren
         controller.drive(AdafruitController::kForward);
-        int seconds = 2;
 
         // schleife, die periodisch testet, ob Hinderniss vor Buggy ist
-        for (int ms = 0; ms < seconds * 1500;) {
-            std::cout << "Distance: " << std::fixed << std::setprecision(2)
-                      << distance_cm() << "cm\n";
-
-            // fuer INTERVALL_MS schlafen legen
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(INTERVALL_MS));
+        double distance = -1;
+        while(true)
+        {
+            //distance neu berechnen
+            distance = distance_cm();
+            std::cout << "Distance: " << std::fixed << std::setprecision(2) << distance << "cm\n";
+            //threat schlafen legen für INTERVALL ms
+            std::this_thread::sleep_for(std::chrono::milliseconds(INTERVALL_MS));
         }
     }
 
