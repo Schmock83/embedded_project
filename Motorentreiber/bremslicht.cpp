@@ -1,4 +1,5 @@
 #include <wiringPi.h>
+#include <signal.h>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -11,12 +12,13 @@
 #define MINIMAL_DISTANCE_CM 15
 
 #define INTERVALL_MS \
-    50  // Intervall in dem geprueft werden soll ob hinderniss vor buggy
+    50 // Intervall in dem geprueft werden soll ob hinderniss vor buggy
 
 AdafruitController controller;
 
 /// Interrupt Routine for STRG-C
-void signalHandler(int signum) {
+void signalHandler(int signum)
+{
     std::cout << "Strg-C Programmende" << std::endl;
 
     // motoren releasen
@@ -25,7 +27,8 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-double distance_cm(void) {
+double distance_cm(void)
+{
     digitalWrite(GPIO_TRIGGER, HIGH);
 
     std::this_thread::sleep_for(std::chrono::nanoseconds(10));
@@ -35,11 +38,13 @@ double distance_cm(void) {
     auto startTime = std::chrono::high_resolution_clock::now();
     auto stopTime = std::chrono::high_resolution_clock::now();
 
-    while (digitalRead(GPIO_ECHO) == LOW) {
+    while (digitalRead(GPIO_ECHO) == LOW)
+    {
         startTime = std::chrono::high_resolution_clock::now();
     }
 
-    while (digitalRead(GPIO_ECHO) == HIGH) {
+    while (digitalRead(GPIO_ECHO) == HIGH)
+    {
         stopTime = std::chrono::high_resolution_clock::now();
     }
 
@@ -50,7 +55,8 @@ double distance_cm(void) {
     // durch 2 teilen, da hin und rueck-weg
     double distance = (elapsed_ms * 34.3) / 2;
 
-    if (distance <= MINIMAL_DISTANCE_CM) {
+    if (distance <= MINIMAL_DISTANCE_CM)
+    {
         // bremslicht anschalten
         digitalWrite(BREMSLICHT, HIGH);
 
@@ -58,7 +64,9 @@ double distance_cm(void) {
         controller.drive(AdafruitController::kBrake);
 
         std::cout << "Buggy wurde angehalten.\n";
-    } else {
+    }
+    else
+    {
         // bremslicht ausschalten
         digitalWrite(BREMSLICHT, LOW);
     }
@@ -66,7 +74,8 @@ double distance_cm(void) {
     return distance;
 }
 
-int main() {
+int main()
+{
     // Csignal für Abbruch über STRG-C
     signal(SIGINT, signalHandler);
 
@@ -78,7 +87,8 @@ int main() {
     pinMode(GPIO_ECHO, INPUT);
     pinMode(BREMSLICHT, OUTPUT);
 
-    if (controller.motorsAvailable()) {
+    if (controller.motorsAvailable())
+    {
         controller.setSpeed();
 
         // geradeaus fahren
@@ -86,7 +96,8 @@ int main() {
 
         // schleife, die periodisch testet, ob Hinderniss vor Buggy ist
         double distance = -1;
-        do{
+        do
+        {
             // distance neu berechnen
             distance = distance_cm();
             std::cout << "Distance: " << std::fixed << std::setprecision(2)
@@ -94,7 +105,7 @@ int main() {
             // threat schlafen legen für INTERVALL ms
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(INTERVALL_MS));
-        }while(distance > MINIMAL_DISTANCE_CM);
+        } while (distance > MINIMAL_DISTANCE_CM);
     }
 
     return 0;
