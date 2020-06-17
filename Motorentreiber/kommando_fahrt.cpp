@@ -1,8 +1,4 @@
-///
-/// Project main
-///
-
-/// Includes
+// Includes
 #include <signal.h>
 #include <vector>
 #include <math.h>
@@ -11,15 +7,17 @@
 
 #include "source/adafruitController.h"
 
+//globale Controller Variable zum kontrollieren des Buggys
 AdafruitController controller;
 
-typedef std::pair<AdafruitController::ControllerCommand, double>  command_time_pair;
+//typedefinition damit uebersichtlicher
+typedef std::pair<AdafruitController::ControllerCommand, double> command_time_pair;
 
 /// Interrupt Routine for STRG-C
 void signalHandler(int signum)
 {
-    //std::cout << "Strg-C Programmende" << std::endl;
-	
+    std::cout << "Strg-C Programmende" << std::endl;
+
     //motoren releasen
     controller.drive(AdafruitController::kRelease);
 
@@ -29,59 +27,66 @@ void signalHandler(int signum)
 // returned den entsprechenden AdafruitController::ControllerCommand fuer das Argument
 AdafruitController::ControllerCommand getCommandForString(const char *command)
 {
-    //std::cout << "getCommandForString(" << command << "): ";
     if (strcmp(command, "forward") == 0 || strcmp(command, "Forward") == 0)
     {
-        //std::cout << "forward\n";
         return AdafruitController::kForward;
     }
     else if (strcmp(command, "backward") == 0 || strcmp(command, "Backward") == 0)
     {
-        //std::cout << "backward\n";
         return AdafruitController::kBackward;
     }
     else if (strcmp(command, "right") == 0 || strcmp(command, "Right") == 0)
     {
-        //std::cout << "right\n";
         return AdafruitController::kRight;
     }
     else if (strcmp(command, "left") == 0 || strcmp(command, "Left") == 0)
     {
-        //std::cout << "left\n";
         return AdafruitController::kLeft;
     }
-    else
+    else if (strcmp(command, "brake") == 0 || strcmp(command, "Brake") == 0)
     {
-        //std::cout << "invalid\n";
+        return AdafruitController::kBrake;
+    }
+    else if (strcmp(command, "release") == 0 || strcmp(command, "Release") == 0)
+    {
+        return AdafruitController::kRelease;
+    }
+    else //invalides kommando bzw. Fahrrichtung
+    {
         return AdafruitController::kInvalidCommand;
-    }   
+    }
 }
 
 // verarbeitet die argumente
 std::vector<command_time_pair> parseArguments(int argc, char *argv[])
 {
     std::vector<command_time_pair> commands;
-    //commands.resize(argc-1);
 
     for (int i = 1; i < argc; i++)
     {
+        //filtert kommando und zeit aus jedem kommando
         char *command = strtok(argv[i], "-");
+        //erste zeichenfolge vor dem '-' ist das kommando
         double duration = atof(strtok(nullptr, "-"));
-        AdafruitController::ControllerCommand cmd;
-        //std::cout << argv[i] << ": " << command << "~" << seconds << std::endl;
+        //letzte zeichenfolge nach dem '-' ist die Zeit(dauer)
 
-        if((cmd = getCommandForString(command)) == AdafruitController::kInvalidCommand)
+        AdafruitController::ControllerCommand cmd;
+        
+        //ueberpruefen ob jedes kommando gueiltig ist
+        if ((cmd = getCommandForString(command)) == AdafruitController::kInvalidCommand)
         {
-            //stop programm
-            std::cout << "Command \'" << command << "\' not known\nClosing Program...\n";
+            //falls nicht, programm stoppen
+            std::cerr << "Command \'" << command << "\' not known\nClosing Program...\n";
             signalHandler(-1);
         }
-        else    
+        else
         {
+            //falls gueltig -> dem vektor hinzufuegen um spaeter ausgefuehrt zu werden
             commands.push_back(command_time_pair(getCommandForString(command), duration));
         }
     }
 
+    //vektor zurueckgeben mit allen (Kommando, Zeit-dauer)-Paaren
     return commands;
 }
 
@@ -108,30 +113,33 @@ void printCommand(AdafruitController::ControllerCommand cmd, double seconds)
     std::cout << "Driving \'" << commandString << "\' for " << seconds << " seconds\n";
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     // Csignal für Abbruch über STRG-C
     signal(SIGINT, signalHandler);
 
-    if(argc < 2)
+    if (argc < 2)
     {
-        std::cerr << "No Arguments given!\nUsage: " << argv[0] << " [direction-seconds]\n" << "Example: " << argv[0] << " Forward-1.5 Backward-2.3 ...\n";
+        std::cerr << "No Arguments given!\nUsage: " << argv[0] << " [direction-seconds]\n"
+                  << "Example: " << argv[0] << " Forward-1.5 Backward-2.3 ...\n";
         return -1;
     }
 
     auto commands = parseArguments(argc, argv); // kommandos in richtiges format zum späteren verarbeiten bringen
 
-    if(controller.motorsAvailable())    // motoren erreichbar?
+    //ueberpruefen ob motoren bzw. Motorhat erreichbar sind bzw. ist
+    if (controller.motorsAvailable())
     {
+        //speed des controller setzten (default=100)
         controller.setSpeed();
 
         for (auto pair : commands)
         {
             printCommand(pair.first, pair.second);
 
-            controller.drive(pair.first);   //ausführen des eigendlichen kommandos
+            controller.drive(pair.first); //ausfuehren des aktuellen kommandos
 
-            std::this_thread::sleep_for(std::chrono::milliseconds( (int)(pair.second*1000) ));
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(pair.second * 1000))); //legt threat schlafen für aktuelle Zeit-dauer
         }
     }
 
