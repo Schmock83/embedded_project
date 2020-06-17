@@ -133,13 +133,16 @@ int main(int argc, char *argv[])
         //speed des controller setzten (default=100)
         controller.setSpeed();
 
+        //alle (Kommand, Zeit-dauer) Paare durchgehen
         for (auto pair : commands)
         {
             printCommand(pair.first, pair.second);
 
-            controller.drive(pair.first); //ausfuehren des aktuellen kommandos
+            //ausfuehren des aktuellen kommandos
+            controller.drive(pair.first);
 
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(pair.second * 1000))); //legt threat schlafen für aktuelle Zeit-dauer
+            //legt threat schlafen für aktuelle Zeit-dauer
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(pair.second * 1000))); 
         }
     }
 
