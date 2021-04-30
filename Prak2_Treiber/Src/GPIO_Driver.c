@@ -41,6 +41,34 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 	else
 	{
 		// Implementieren Sie die Funktionalität der Clock Deaktivierung
+		if(pGPIOx == GPIOA)
+		{
+			GPIOA_PCLK_DI();
+		}else if (pGPIOx == GPIOB)
+		{
+			GPIOB_PCLK_DI();
+		}else if (pGPIOx == GPIOC)
+		{
+			GPIOC_PCLK_DI();
+		}else if (pGPIOx == GPIOD)
+		{
+			GPIOD_PCLK_DI();
+		}else if (pGPIOx == GPIOE)
+		{
+			GPIOE_PCLK_DI();
+		}else if (pGPIOx == GPIOF)
+		{
+			GPIOF_PCLK_DI();
+		}else if (pGPIOx == GPIOG)
+		{
+			GPIOG_PCLK_DI();
+		}else if (pGPIOx == GPIOH)
+		{
+			GPIOH_PCLK_DI();
+		}else if (pGPIOx == GPIOI)
+		{
+			GPIOI_PCLK_DI();
+		}
 	}
 }
 
@@ -54,6 +82,9 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	 if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
 	 {
 		// Implementieren Sie die Funktionalität
+		//pGPIOHandle->pGPIOx->MODE_REG = RESET;
+		pGPIOHandle->pGPIOx->MODE_REG |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber * 2));
+		
 	 }
 	 
 	 // ####################################### Praktikum 3: IRQ ############################################################
@@ -69,10 +100,16 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	// ####################################### ENDE IRQ #####################################################################
 	
 	 //Konfigurieren des Output-Speeds
+	 //pGPIOHandle->pGPIOx->OUTPUT_SPEED = RESET;
+	 pGPIOHandle->pGPIOx->OUTPUT_SPEED |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	 
 	 //Konfigurieren des Pull-up/down Settings
+	 //pGPIOHandle->pGPIOx->PULL_UP_DOWN = RESET;
+	 pGPIOHandle->pGPIOx->PULL_UP_DOWN |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	 
 	 //Konfigurieren des Output modus
+	 //pGPIOHandle->pGPIOx->OUTPUT_TYPE = RESET;
+	 pGPIOHandle->pGPIOx->OUTPUT_TYPE |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	 
 }
 
@@ -111,28 +148,44 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 uint8_t GPIO_ReadFromInputPin(GPIO_Handle_t *pGPIO_Handle)
 {
 	// Implementieren Sie die Funktionalität
+	if((pGPIO_Handle->pGPIOx->INPUT_DATA_REG & pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber) != RESET){
+		return (uint8_t) SET;
+	}else{
+		return (uint8_t) RESET;
+	}
 }
 
 uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx)
 {
 	// Implementieren Sie die Funktionalität
+	return (uint16_t)pGPIOx->INPUT_DATA_REG;
 }
 
 void GPIO_WriteToOutputPin(GPIO_Handle_t *pGPIO_Handle, uint8_t Value)
 {
 	// Implementieren Sie die Funktionalität
+
+	if(Value == SET){
+		//BSSR benutzen um atomares bit zu setzen
+		pGPIO_Handle->pGPIOx->BIT_SET_RESET_REG = (SET << pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber);
+	}else{
+		//BSSR benutzen um atomares bit zu resetten (pinNumber + 16bits)
+		pGPIO_Handle->pGPIOx->BIT_SET_RESET_REG = (SET << (pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber + 16));
+	}
 }
 
 
 void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
 {
 	// Implementieren Sie die Funktionalität
+	pGPIOx->OUTPUT_DATA_REG = Value;
 }
 
 
 void GPIO_ToggleOutputPin(GPIO_Handle_t *pGPIO_Handle)
 {
 	// Implementieren Sie die Funktionalität
+	pGPIO_Handle->pGPIOx->OUTPUT_DATA_REG ^= (SET << pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber);
 }
 
 // ####################################### Praktikum 3: IRQ ############################################################

@@ -18,13 +18,74 @@
  */
 
 #include <stdint.h>
+#include "STM.h"
+#include "GPIO_Driver.h"
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+void delay_2seconds(void)
+{
+	for(volatile uint32_t i=0; i < 2500000; i++);
+}
+
 int main(void)
 {
-    /* Loop forever */
-	for(;;);
+
+  GPIO_Handle_t GPIO_Handle_LED1;
+  GPIO_Handle_LED1.pGPIOx = GPIOD;
+  GPIO_Handle_LED1.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
+  GPIO_Handle_LED1.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_15;
+  GPIO_Handle_LED1.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+  GPIO_Handle_LED1.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+  GPIO_Handle_LED1.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+
+  GPIO_Handle_t GPIO_Handle_LED2;
+  GPIO_Handle_LED2.pGPIOx = GPIOD;
+  GPIO_Handle_LED2.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
+  GPIO_Handle_LED2.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
+  GPIO_Handle_LED2.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+  GPIO_Handle_LED2.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+  GPIO_Handle_LED2.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+
+  GPIO_Handle_t GPIO_Handle_LED3;
+  GPIO_Handle_LED3.pGPIOx = GPIOD;
+  GPIO_Handle_LED3.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
+  GPIO_Handle_LED3.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_13;
+  GPIO_Handle_LED3.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+  GPIO_Handle_LED3.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+  GPIO_Handle_LED3.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+
+  GPIO_Handle_t GPIO_Handle_LED4;
+  GPIO_Handle_LED4.pGPIOx = GPIOD;
+  GPIO_Handle_LED4.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
+  GPIO_Handle_LED4.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12;
+  GPIO_Handle_LED4.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
+  GPIO_Handle_LED4.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+  GPIO_Handle_LED4.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+
+  GPIO_Init(&GPIO_Handle_LED1);
+  GPIO_Init(&GPIO_Handle_LED2);
+  GPIO_Init(&GPIO_Handle_LED3);
+  GPIO_Init(&GPIO_Handle_LED4);
+
+  for(;;){
+    GPIO_ToggleOutputPin(&GPIO_Handle_LED1);
+    delay_2seconds();
+    GPIO_ToggleOutputPin(&GPIO_Handle_LED1);
+
+    GPIO_ToggleOutputPin(&GPIO_Handle_LED2);
+    delay_2seconds();
+	GPIO_ToggleOutputPin(&GPIO_Handle_LED2);
+
+	GPIO_ToggleOutputPin(&GPIO_Handle_LED3);
+	delay_2seconds();
+	GPIO_ToggleOutputPin(&GPIO_Handle_LED3);
+
+	GPIO_ToggleOutputPin(&GPIO_Handle_LED4);
+	delay_2seconds();
+	GPIO_ToggleOutputPin(&GPIO_Handle_LED4);
+
+  }
 }

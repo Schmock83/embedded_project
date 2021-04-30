@@ -99,10 +99,10 @@ typedef struct
   uint32_t RESERVED4;     						/*Address offset: 0x5C*/
   volatile uint32_t APB1LPENR;     				/*Address offset: 0x60*/
   volatile uint32_t APB2LPENR;     				/*Address offset: 0x64*/
-  uint32_t RESERVED[2];     					/*Address offset: 0x68-0x6C*/
+  uint32_t RESERVED5[2];     					/*Address offset: 0x68-0x6C*/
   volatile uint32_t BDCR;     					/*Address offset: 0x70*/
   volatile uint32_t CSR;     					/*Address offset: 0x74*/
-  uint32_t RESERVED[2];     					/*Address offset: 0x78-0x7C*/
+  uint32_t RESERVED6[2];     					/*Address offset: 0x78-0x7C*/
   volatile uint32_t SSCGR;     					/*Address offset: 0x80*/
   volatile uint32_t PLLI2SCFGR;     			/*Address offset: 0x84*/
 
@@ -210,8 +210,8 @@ typedef struct
  * Clock Enable und Disable Makros für SYSCFG
  * TODO: Vervollständigen Sie die Makros zum anschalten und Abschalten der Syscfg Clock
  */
-#define SYSCFG_PCLK_EN()               			(SYSCFG |= (1 << 14))
-#define SYSCFG_PCLK_DI()               			do{  }while(0)
+#define SYSCFG_PCLK_EN()        (RCC->APB2ENR |= ~(SET << 14))
+#define SYSCFG_PCLK_DI()        (RCC->APB2ENR &= ~(SET << 14))
 
 /*
  * Register struct EXTI
@@ -219,8 +219,12 @@ typedef struct
  */
 typedef struct
 {
-	volatile uint32_t IMR;    		 	/*!< Kurze Beschreibung    					Address offset: 0x00 */
-	// ...
+	volatile uint32_t IMR;    		 	/*!< Interrupt Mask    					                    Address offset: 0x00 */
+  volatile uint32_t EMR;    		 	/*!< Event Mask    					                        Address offset: 0x04 */
+  volatile uint32_t RTSR;    		 	/*!< Rising trigger selection register    					Address offset: 0x08 */
+  volatile uint32_t FTSR;    		 	/*!< Falling trigger selection    					        Address offset: 0x0C */
+  volatile uint32_t SWIER;    		/*!< Software interrupt event    					          Address offset: 0x10 */
+  volatile uint32_t PR;    		 	  /*!< Pending Register    					                  Address offset: 0x14 */
 }EXTI_RegDef_t;
 
 /*
@@ -228,12 +232,12 @@ typedef struct
  */
 typedef struct
 {
-	volatile uint32_t MEMRMP;        	/*!< 										Address offset: 0x00		*/
-	volatile uint32_t PMC;           	/*!<										Address offset: 0x04		*/
-	volatile uint32_t EXTICR[4];     	/*!									 		Address offset: 0x08-0x14	*/
-	uint32_t      	  RESERVED1[2];  	/*!<										Reserved, 0x18-0x1C			*/
-	volatile uint32_t CMPCR;         	/*!<										Address offset: 0x20		*/
-	uint32_t      	  RESERVED2[2];  	/*!<										Reserved, 0x24-0x28 		*/
+	volatile uint32_t MEMRMP;        	/*!< Memory remap				                          Address offset: 0x00		*/
+	volatile uint32_t PMC;           	/*!< peripheral mode configuration								Address offset: 0x04		*/
+	volatile uint32_t EXTICR[4];     	/*!< external interrupt configuration	1-4					Address offset: 0x08-0x14	*/
+	uint32_t      	  RESERVED1[2];  	/*!< Reserved,                                    0x18-0x1C			*/
+	volatile uint32_t CMPCR;         	/*!< Compensation cell register										Address offset: 0x20		*/
+	uint32_t      	  RESERVED2[2];  	/*!< Reserved                                     0x24-0x28 		*/
 	volatile uint32_t CFGR;          	/*!<										Address offset: 0x2C		*/
 } SYSCFG_RegDef_t;
 
