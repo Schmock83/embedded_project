@@ -9,12 +9,27 @@
 
 #include "STM.h"
 
+//Neat functions to deal with bits, source: https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
+/* a=target variable, b=bit number to act upon 0-n */
+#define BIT_SET(a,b) ((a) |= (1<<(b)))
+#define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
+#define BIT_FLIP(a,b) ((a) ^= (1<<(b)))
+#define BIT_CHECK(a,b) (!!((a) & (1<<(b))))        // '!!' to make sure this returns 0 or 1
+
+/* x=target variable, y=mask */
+#define BITMASK_SET(x,y) ((x) |= (y))
+#define BITMASK_CLEAR(x,y) ((x) &= (~(y)))
+#define BITMASK_FLIP(x,y) ((x) ^= (y))
+#define BITMASK_CHECK_ALL(x,y) (!(~(x) & (y)))
+#define BITMASK_CHECK_ANY(x,y) ((x) & (y)) //((x) & (y)) == (y) ?
+
+
 /*
  * Struct für PIN-Konfiguration
  */
 typedef struct
 {
-	uint8_t GPIO_PinNumber;
+	uint8_t GPIO_PinNumber;						/*!< mögliche Werte in @GPIO_PIN_NUMBERS >*/
 	uint8_t GPIO_PinMode;						/*!< mögliche Werte in @GPIO_PIN_MODES >*/
 	uint8_t GPIO_PinSpeed;						/*!< mögliche Werte in @GPIO_PIN_SPEED >*/
 	uint8_t GPIO_PinPuPdControl;				/*!< mögliche Werte in @GPIO_PIN_PULL_UP_DOWN >*/
@@ -77,8 +92,8 @@ typedef struct
  */
 #define GPIO_SPEED_LOW				0
 #define GPIO_SPEED_MEDIUM			1
-#define GPIO_SPEED_FAST				2
-#define GPOI_SPEED_HIGH				3
+#define GPIO_SPEED_HIGH				2
+#define GPIO_SPEED_VERY_HIGH		3
 
 /*
  * @GPIO_PIN_PULL_UP_DOWN
